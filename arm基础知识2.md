@@ -56,3 +56,26 @@ ARM微处理器的运行模式可以通过软件改变，也可以通过外部�
 | IRQ      | 通常的中断                                                   |
 | FIQ      | 快速中断                                                     |
 
+#### ARM寄存器
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/icRxcMBeJfc8SzIR6xML71YPLGQMYQAjuQne27rauooLcCpibYPQWaib25fQ32j9Pyc4VodgibVJbfR9V3tiafmh5qA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+通用寄存器包括R0~R15,可以分为3类:
+
+1. 未分组寄存器R0~R7
+2. 分组寄存器R8~R14、R13(SP) 、R14(LR)
+3. 程序计数器PC(R15)、R8_fiq-R12_fir为快中断独有
+
+#### 指令流水线
+
+ARM处理器使用简单的3级流水线：
+
+（1）取指令 从寄存器装载一条指令。
+
+（2）译码（decode） 识别被执行的指令，并为下一个周期准备数据通路的控制信号。在这一级，指令占有译码逻辑，不占用数据通路。
+
+（3）执行 处理指令并将结果写回寄存器。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/icRxcMBeJfc8SzIR6xML71YPLGQMYQAjuwic4HAh4uPEpCI5nZNBkCbYaDYiaBA1zGYt16uQgaS9C7m2H3x71HyJA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+对于三级流水线，PC寄存器中存放的是预取指令的地址，并非正在执行的指令地址。对于thumb指令集正在执行的指令地址是PC-4因为thumb是16位指令集，每条指令是2字节。ARM指令集是PC-8因为ARM是32位指令集，每条指令是 4字节。
