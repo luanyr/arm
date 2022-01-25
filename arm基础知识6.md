@@ -12,7 +12,7 @@
 
 理论上来讲可以将代码加载到内存的任意位置然后跳转到相应位置运行，如果代码是位置有关码且和链接地址不一致可能会出现问题。
 
-##### uboot代码解析
+##### uboot链接脚本解析
 
 ENTRY(_start)_
 
@@ -92,9 +92,48 @@ __image_copy_start的定义如下：
 拷贝结束时的位置标签
 -->
 
+ ``.rel_dyn_start :`
+ `{`
+  `*(.__rel_dyn_start)
+ }`
 
+
+ `.rel.dyn : {`
+  `*(.rel*)`
+ `}`
+ `.rel_dyn_end :`
+ `{`
+  `*(.__rel_dyn_end)}.end :{*(.__end)}_image_binary_end = .;. = ALIGN(4096);.mmutable : {*(.mmutable)}`
 
 ​	`......`
 
 `}`
+
+<!--
+位置标签，重定位时全局变量的LABLE的起始地址，下面end时结束地址
+-->
+
+##### 重定位理解
+
+代码位于arch/arm/lib/relocate.S
+
+`ENTRY(relocate_code)`
+
+  `ldr r1, =__image_copy_start /* r1 <- SRC &__image_copy_start */`
+
+  `subs  r4, r0, r1   /* r4 <- relocation offset */`
+
+  `beq relocate_done    /* skip relocation */`
+
+  `ldr r2, =__image_copy_end  /* r2 <- SRC &__image_copy_end */`
+
+`copy_loop:`
+
+  `ldmia  r1!, {r10-r11}   /* copy from source address [r1]  */`
+
+  `stmia  r0!, {r10-r11}   /* copy to  target address [r0]  */`
+
+  `cmp r1, r2     /* until source end address [r2]  */`
+
+  `blo copy_loop`
 
